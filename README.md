@@ -16,25 +16,11 @@ Nextflow pipeline for prokaryotic RNA-seq: bowtie2 genome mapping → featureCou
 ## Usage
 
 ```bash
-perl make_prok_rnaseq.pl \
-    -1 sample_R1.fq.gz \
-    -2 sample_R2.fq.gz \
-    -f genome.fasta \
-    -g genome.gff \
-    -d /path/to/workdir \
-    -o /path/to/outdir \
-    -t 16
-sbatch outdir.sh
-```
-
-Or run directly:
-
-```bash
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
-    --input samplesheet.csv \
-    --fasta genome.fasta \
-    --gff   genome.gff \
+    --input  samplesheet.csv \
+    --fasta  genome.fasta \
+    --gff    genome.gff \
     --outdir results
 ```
 
