@@ -44,11 +44,11 @@ workflow {
 
     // Collect all BAMs for a single featureCounts run (multi-sample columns)
     ch_bams = SAMTOOLS_SORT.out.bam
-        .map { meta, bam -> bam }
+        .map { m, bam -> bam }
         .collect()
 
     // single_end: true if fastq_2 absent (consistent across all samples assumed)
-    ch_single_end = ch_reads.map { meta, reads -> meta.single_end }.first()
+    ch_single_end = ch_reads.map { m, r -> m.single_end }.first()
 
     FEATURECOUNTS(ch_bams, PREPARE_GFF.out.gff3, ch_single_end)
 
