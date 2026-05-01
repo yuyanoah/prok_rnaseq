@@ -6,7 +6,7 @@ process BOWTIE2_ALIGN {
     path  index
 
     output:
-    tuple val(meta), path("${meta.id}.bam"), emit: bam
+    tuple val(meta), path("${meta.id}.sam"), emit: bam
     path "${meta.id}.bowtie2.log",           emit: log
     path 'versions.yml',                     emit: versions
 
@@ -18,13 +18,12 @@ process BOWTIE2_ALIGN {
         ${reads_arg} \\
         --threads ${task.cpus} \\
         ${params.bt2_extra_args} \\
-        2> ${meta.id}.bowtie2.log \\
-    | samtools view -bS -o ${meta.id}.bam -
+        -S ${meta.id}.sam \\
+        2> ${meta.id}.bowtie2.log
 
     cat <<-EOF > versions.yml
     "${task.process}":
         bowtie2: \$(bowtie2 --version | head -1 | sed 's/.*version //')
-        samtools: \$(samtools --version | head -1 | sed 's/samtools //')
     EOF
     """
 }
