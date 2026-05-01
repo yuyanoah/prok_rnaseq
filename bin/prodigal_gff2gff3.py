@@ -38,7 +38,11 @@ def main():
             id_val = m.group(1) if m else f"{seqid}_{start}_{end}"
 
             # Build locus_tag: keep alphanumeric and underscores
-            locus_tag = re.sub(r'[^A-Za-z0-9_]', '_', id_val)
+            # If ID doesn't already contain the seqid, prefix with it
+            # (Prodigal sometimes emits bare numeric IDs like "1_1")
+            norm_seqid = re.sub(r'[^A-Za-z0-9_]', '_', seqid)
+            norm_id    = re.sub(r'[^A-Za-z0-9_]', '_', id_val)
+            locus_tag  = norm_id if norm_id.startswith(norm_seqid) else f"{norm_seqid}_{norm_id}"
 
             # Collect extra attributes (drop ID= so we can rebuild it)
             extra_attrs = re.sub(r'\bID=[^;]*(;|$)', '', attrs).strip(';')
