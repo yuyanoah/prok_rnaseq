@@ -18,7 +18,18 @@ Nextflow pipeline for prokaryotic RNA-seq: bowtie2 genome mapping → featureCou
 ```bash
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
-    --input  samplesheet.csv \
+    --r1     sample_R1.fastq.gz \
+    --r2     sample_R2.fastq.gz \
+    --fasta  genome.fasta \
+    --gff    genome.gff \
+    --outdir results
+```
+
+Single-end:
+```bash
+nextflow run yuyanoah/prok_rnaseq \
+    -profile slurm,singularity \
+    --r1     sample.fastq.gz \
     --fasta  genome.fasta \
     --gff    genome.gff \
     --outdir results
@@ -26,11 +37,15 @@ nextflow run yuyanoah/prok_rnaseq \
 
 ## Input
 
-**Samplesheet** (`samplesheet.csv`):
-```
-sample,fastq_1,fastq_2,strandedness
-sample1,/path/r1.fq.gz,/path/r2.fq.gz,unstranded
-```
+| Parameter | Description |
+|-----------|-------------|
+| `--r1` | R1 (or single-end) FASTQ (.fastq.gz) |
+| `--r2` | R2 FASTQ (.fastq.gz) — omit for single-end |
+| `--fasta` | Reference genome FASTA |
+| `--gff` | Reference annotation GFF/GFF3 (Prodigal or Bakta — auto-detected) |
+| `--outdir` | Output directory |
+
+Sample name is derived automatically from the R1 filename. Override with `--sample`.
 
 **GFF format** — both Prodigal and Bakta are accepted; format is auto-detected.
 
@@ -47,6 +62,7 @@ sample1,/path/r1.fq.gz,/path/r2.fq.gz,unstranded
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
+| `--sample` | *(derived from R1 filename)* | Sample name |
 | `--strandedness` | `unstranded` | `unstranded` / `forward` / `reverse` |
 | `--max_cpus` | `16` | Max CPUs per process |
 | `--fc_feature_type` | `CDS` | featureCounts feature type |
