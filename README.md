@@ -13,6 +13,40 @@ Nextflow pipeline for prokaryotic RNA-seq: bowtie2 genome mapping → featureCou
 | Quantification | featureCounts | Count reads overlapping CDS features |
 | TPM | Python | Calculate TPM from counts |
 
+## Quick Start
+
+**1. Install Nextflow** (if not already installed)
+```bash
+curl -s https://get.nextflow.io | bash
+mv nextflow ~/bin/  # or any directory in $PATH
+```
+
+**2. Pull the pipeline**
+```bash
+nextflow pull yuyanoah/prok_rnaseq
+```
+
+To update to the latest version later:
+```bash
+nextflow pull yuyanoah/prok_rnaseq
+```
+
+**3. Run**
+
+See [Usage](#usage) below.
+
+> **Note for SLURM clusters with limited home quota** (e.g. SCG):
+> Set the following before running to redirect Nextflow and Singularity cache to a high-capacity filesystem:
+> ```bash
+> export NXF_HOME=/path/to/storage/.nextflow
+> export NXF_SINGULARITY_CACHEDIR=/path/to/storage/.singularity
+> export SINGULARITY_CACHEDIR=/path/to/storage/.singularity/cache
+> export SINGULARITY_TMPDIR=/path/to/storage/.singularity/tmp
+> ```
+> Add these to `~/.bashrc` to make them permanent.
+
+---
+
 ## Usage
 
 Paired-end:
