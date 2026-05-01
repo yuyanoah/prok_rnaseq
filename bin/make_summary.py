@@ -43,15 +43,16 @@ def parse_fc_summary(path):
     return assigned, no_feature, ambiguity
 
 def parse_tpm(path):
-    gt0 = 0
+    gt0 = total = 0
     with open(path) as f:
         reader = csv.DictReader(f, delimiter='\t')
         sample_cols = [c for c in reader.fieldnames if c not in ('gene_id', 'length')]
         for row in reader:
+            total += 1
             tpm = sum(float(row[c]) for c in sample_cols) / len(sample_cols)
             if tpm > 0:
                 gt0 += 1
-    return gt0
+    return gt0, total
 
 def main():
     if len(sys.argv) != 5:
@@ -62,19 +63,19 @@ def main():
     total, mapped, map_rate        = parse_bowtie2_log(bt2_log)
     assigned, no_feat, ambig       = parse_fc_summary(fc_summary)
     assign_rate = round(assigned / total * 100, 2) if total > 0 else 0.0
-    genes_gt0                      = parse_tpm(tpm_tsv)
+    genes_gt0, total_cds           = parse_tpm(tpm_tsv)
 
     header = [
         'sample', 'total_reads', 'mapped_reads', 'mapping_rate_pct',
         'assigned_reads', 'assignment_rate_pct',
         'unassigned_no_feature', 'unassigned_ambiguity',
-        'genes_tpm_gt0'
+        'genes_tpm_gt0', 'total_cds'
     ]
     row = [
         sample, total, mapped, map_rate,
         assigned, assign_rate,
         no_feat, ambig,
-        genes_gt0
+        genes_gt0, total_cds
     ]
 
     writer = csv.writer(sys.stdout, delimiter='\t')
