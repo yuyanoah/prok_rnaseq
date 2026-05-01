@@ -15,6 +15,7 @@ Nextflow pipeline for prokaryotic RNA-seq: bowtie2 genome mapping → featureCou
 
 ## Usage
 
+Paired-end:
 ```bash
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
