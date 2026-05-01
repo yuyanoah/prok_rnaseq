@@ -37,17 +37,16 @@ def main():
             m = re.search(r'\bID=([^;]+)', attrs)
             id_val = m.group(1) if m else f"{seqid}_{start}_{end}"
 
-            # Build locus_tag: keep alphanumeric and underscores
-            # Prodigal sometimes emits bare contig-index IDs like "1_1" (contig 1, gene 1)
-            # instead of full IDs like "NZ_CP022466.1_1". In that case, strip the
-            # contig-index prefix and replace it with the actual seqid.
-            norm_seqid = re.sub(r'[^A-Za-z0-9_]', '_', seqid)
-            norm_id    = re.sub(r'[^A-Za-z0-9_]', '_', id_val)
-            if norm_id.startswith(norm_seqid):
-                locus_tag = norm_id
+            # Build locus_tag preserving dots to match Prodigal faa/ffn naming
+            # (e.g. NZ_CP022466.1_1). Prodigal sometimes emits bare contig-index
+            # IDs like "1_1" instead of full IDs like "NZ_CP022466.1_1"; in that
+            # case strip the contig-index prefix and prepend the actual seqid.
+            if id_val.startswith(seqid):
+                locus_tag = id_val          # already seqid-prefixed: NZ_CP022466.1_1
             else:
+                norm_id   = re.sub(r'[^A-Za-z0-9_]', '_', id_val)
                 gene_part = norm_id.split('_', 1)[1] if '_' in norm_id else norm_id
-                locus_tag = f"{norm_seqid}_{gene_part}"
+                locus_tag = f"{seqid}_{gene_part}"   # e.g. NZ_CP022466.1_1
 
             # Collect extra attributes (drop ID= so we can rebuild it)
             extra_attrs = re.sub(r'\bID=[^;]*(;|$)', '', attrs).strip(';')
