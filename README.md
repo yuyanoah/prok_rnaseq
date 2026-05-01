@@ -15,10 +15,9 @@ Nextflow pipeline for prokaryotic RNA-seq: bowtie2 genome mapping → featureCou
 
 ## Quick Start
 
-**1. Install Nextflow** (if not already installed)
+**1. Load Nextflow**
 ```bash
-curl -s https://get.nextflow.io | bash
-mv nextflow ~/bin/  # or any directory in $PATH
+module load nextflow
 ```
 
 **2. Pull the pipeline**
