@@ -12,18 +12,19 @@ include { CALC_TPM       } from './modules/local/calc_tpm'
 workflow {
 
     // ── inputs ──────────────────────────────────────────────────────────────
-    ch_reads = Channel
-        .fromPath(params.input, checkIfExists: true)
-        .splitCsv(header: true)
-        .map { row ->
-            def meta  = [id: row.sample, strandedness: row.strandedness ?: 'unstranded',
-                         single_end: !row.fastq_2]
-            def reads = row.fastq_2
-                ? [ file(row.fastq_1, checkIfExists: true),
-                    file(row.fastq_2, checkIfExists: true) ]
-                : [ file(row.fastq_1, checkIfExists: true) ]
-            [ meta, reads ]
-        }
+    def r1_file    = file(params.r1, checkIfExists: true)
+    def r2_file    = params.r2 ? file(params.r2, checkIfExists: true) : null
+    def single_end = (params.r2 == null)
+    def sample_id  = params.sample
+        ?: r1_file.name
+            .replaceFirst(/(?i)[_\.]R?1[_.].*/,  '')
+            .replaceFirst(/(?i)\.(fastq|fq)(\.gz)?$/, '')
+        ?: 'sample'
+    def meta  = [id: sample_id, strandedness: params.strandedness ?: 'unstranded',
+                 single_end: single_end]
+    def reads = r2_file ? [r1_file, r2_file] : [r1_file]
+
+    ch_reads = Channel.of([meta, reads])
 
     ch_fasta = Channel.fromPath(params.fasta, checkIfExists: true)
     ch_gff   = Channel.fromPath(params.gff,   checkIfExists: true)
