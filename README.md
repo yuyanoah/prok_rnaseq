@@ -61,6 +61,7 @@ Sample name is derived automatically from the R1 filename. Override with `--samp
 | `bam/` | Sorted BAM files |
 | `featurecounts/` | featureCounts output |
 | `tpm/tpm.tsv` | TPM table (genes × samples) |
+| `summary/summary.tsv` | Mapping rate, assignment rate, genes detected |
 | `gff/` | Prepared GFF3 |
 
 ## Parameters

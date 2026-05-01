@@ -8,6 +8,7 @@ include { SAMTOOLS_SORT  } from './modules/local/samtools_sort'
 include { SAMTOOLS_INDEX } from './modules/local/samtools_index'
 include { FEATURECOUNTS  } from './modules/local/featurecounts'
 include { CALC_TPM       } from './modules/local/calc_tpm'
+include { MAKE_SUMMARY   } from './modules/local/make_summary'
 
 workflow {
 
@@ -53,4 +54,11 @@ workflow {
     FEATURECOUNTS(ch_bams, PREPARE_GFF.out.gff3, ch_single_end)
 
     CALC_TPM(FEATURECOUNTS.out.counts)
+
+    ch_summary = Channel.of(sample_id)
+        .combine(BOWTIE2_ALIGN.out.log)
+        .combine(FEATURECOUNTS.out.summary)
+        .combine(CALC_TPM.out.tpm)
+
+    MAKE_SUMMARY(ch_summary)
 }
