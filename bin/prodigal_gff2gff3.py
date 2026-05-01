@@ -38,11 +38,16 @@ def main():
             id_val = m.group(1) if m else f"{seqid}_{start}_{end}"
 
             # Build locus_tag: keep alphanumeric and underscores
-            # If ID doesn't already contain the seqid, prefix with it
-            # (Prodigal sometimes emits bare numeric IDs like "1_1")
+            # Prodigal sometimes emits bare contig-index IDs like "1_1" (contig 1, gene 1)
+            # instead of full IDs like "NZ_CP022466.1_1". In that case, strip the
+            # contig-index prefix and replace it with the actual seqid.
             norm_seqid = re.sub(r'[^A-Za-z0-9_]', '_', seqid)
             norm_id    = re.sub(r'[^A-Za-z0-9_]', '_', id_val)
-            locus_tag  = norm_id if norm_id.startswith(norm_seqid) else f"{norm_seqid}_{norm_id}"
+            if norm_id.startswith(norm_seqid):
+                locus_tag = norm_id
+            else:
+                gene_part = norm_id.split('_', 1)[1] if '_' in norm_id else norm_id
+                locus_tag = f"{norm_seqid}_{gene_part}"
 
             # Collect extra attributes (drop ID= so we can rebuild it)
             extra_attrs = re.sub(r'\bID=[^;]*(;|$)', '', attrs).strip(';')
