@@ -4,6 +4,7 @@ process FEATURECOUNTS {
     input:
     path bams
     path gff
+    val  single_end
 
     output:
     path 'featureCounts.txt',         emit: counts
@@ -13,7 +14,7 @@ process FEATURECOUNTS {
     script:
     def strand = params.strandedness == 'forward'  ? 1 :
                  params.strandedness == 'reverse'  ? 2 : 0
-    def paired = bams instanceof List ? '-p --countReadPairs' : ''
+    def paired = single_end ? '' : '-p --countReadPairs'
     """
     featureCounts \\
         -a ${gff} \\

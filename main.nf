@@ -16,7 +16,8 @@ workflow {
         .fromPath(params.input, checkIfExists: true)
         .splitCsv(header: true)
         .map { row ->
-            def meta  = [id: row.sample, strandedness: row.strandedness ?: 'unstranded']
+            def meta  = [id: row.sample, strandedness: row.strandedness ?: 'unstranded',
+                         single_end: !row.fastq_2]
             def reads = row.fastq_2
                 ? [ file(row.fastq_1, checkIfExists: true),
                     file(row.fastq_2, checkIfExists: true) ]
@@ -45,7 +46,10 @@ workflow {
         .map { meta, bam -> bam }
         .collect()
 
-    FEATURECOUNTS(ch_bams, PREPARE_GFF.out.gff3)
+    // single_end: true if fastq_2 absent (consistent across all samples assumed)
+    ch_single_end = ch_reads.map { meta, reads -> meta.single_end }.first()
+
+    FEATURECOUNTS(ch_bams, PREPARE_GFF.out.gff3, ch_single_end)
 
     CALC_TPM(FEATURECOUNTS.out.counts)
 }
