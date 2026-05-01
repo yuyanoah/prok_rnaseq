@@ -19,21 +19,25 @@ Paired-end:
 ```bash
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
-    --r1     sample_R1.fastq.gz \
-    --r2     sample_R2.fastq.gz \
-    --fasta  genome.fasta \
-    --gff    genome.gff \
-    --outdir results
+    --r1           sample_R1.fastq.gz \
+    --r2           sample_R2.fastq.gz \
+    --fasta        genome.fasta \
+    --gff          genome.gff \
+    --outdir       results \
+    --strandedness unstranded \
+    --max_cpus     16
 ```
 
 Single-end:
 ```bash
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
-    --r1     sample.fastq.gz \
-    --fasta  genome.fasta \
-    --gff    genome.gff \
-    --outdir results
+    --r1           sample.fastq.gz \
+    --fasta        genome.fasta \
+    --gff          genome.gff \
+    --outdir       results \
+    --strandedness unstranded \
+    --max_cpus     16
 ```
 
 ## Input
