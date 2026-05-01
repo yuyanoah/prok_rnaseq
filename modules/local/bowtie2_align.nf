@@ -1,6 +1,5 @@
 process BOWTIE2_ALIGN {
     tag "$meta.id"
-    publishDir "${params.outdir}/bam", mode: 'copy', pattern: '*.bam'
 
     input:
     tuple val(meta), path(reads)
