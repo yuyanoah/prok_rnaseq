@@ -44,42 +44,33 @@ See [Usage](#usage) below.
 > ```
 > Add these to `~/.bashrc` to make them permanent.
 
-> **Note for running multiple jobs in parallel:**
-> Nextflow creates a `.nextflow/history` lock file in the working directory. If multiple jobs run from the same directory simultaneously, they will conflict with an error like `Can't lock file: .nextflow/history`.
-> To avoid this, **run each job from its own output directory**:
-> ```bash
-> mkdir -p /path/to/outdir
-> cd /path/to/outdir
-> nextflow run yuyanoah/prok_rnaseq \
->     --outdir /path/to/outdir \
->     ...
-> ```
-
 ---
 
 ## Usage
 
 Paired-end:
 ```bash
+mkdir -p results && cd results
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
-    --r1           sample_R1.fastq.gz \
-    --r2           sample_R2.fastq.gz \
-    --fasta        genome.fasta \
-    --gff          genome.gff \
-    --outdir       results \
+    --r1           ../sample_R1.fastq.gz \
+    --r2           ../sample_R2.fastq.gz \
+    --fasta        ../genome.fasta \
+    --gff          ../genome.gff \
+    --outdir       . \
     --strandedness unstranded \
     --max_cpus     16
 ```
 
 Single-end:
 ```bash
+mkdir -p results && cd results
 nextflow run yuyanoah/prok_rnaseq \
     -profile slurm,singularity \
-    --r1           sample.fastq.gz \
-    --fasta        genome.fasta \
-    --gff          genome.gff \
-    --outdir       results \
+    --r1           ../sample.fastq.gz \
+    --fasta        ../genome.fasta \
+    --gff          ../genome.gff \
+    --outdir       . \
     --strandedness unstranded \
     --max_cpus     16
 ```
