@@ -6,26 +6,38 @@ import re
 import csv
 
 def parse_bowtie2_log(path):
+    """Return (total, mapped, rate). `mapped` is the number of reads (fragments
+    for paired-end data) with at least one aligned mate, which is what
+    featureCounts can assign (it counts fragments with a single aligned mate
+    unless -B is given). Counting only concordant pairs, as before, let
+    assigned_reads exceed mapped_reads by a fraction of a percent."""
     total = mapped = 0
     with open(path) as f:
         text = f.read()
     m = re.search(r'(\d+) reads; of these:', text)
     if m:
         total = int(m.group(1))
-    m = re.search(r'(\d+) \([\d.]+%\) aligned (?:concordantly )?exactly 1 time', text)
-    if m:
-        mapped += int(m.group(1))
-    m = re.search(r'(\d+) \([\d.]+%\) aligned (?:concordantly )?>1 times', text)
-    if m:
-        mapped += int(m.group(1))
-    # single-end fallback
+    paired = 'were paired' in text
+    if paired:
+        # pairs with neither mate aligned = mates aligned 0 times - pairs with
+        # exactly one unaligned mate; the latter equals (pairs aligned 0 times
+        # concordantly or discordantly) - (pairs with both mates unaligned).
+        m_pairs0 = re.search(r'(\d+) pairs aligned 0 times concordantly or discordantly', text)
+        m_mates0 = re.search(r'(\d+) \([\d.]+%\) aligned 0 times\n', text)
+        if m_pairs0 and m_mates0:
+            both_unaligned = int(m_mates0.group(1)) - int(m_pairs0.group(1))
+            mapped = total - both_unaligned
+    else:
+        m = re.search(r'(\d+) \([\d.]+%\) aligned 0 times', text)
+        if m:
+            mapped = total - int(m.group(1))
     if mapped == 0:
-        m = re.search(r'(\d+) \([\d.]+%\) aligned exactly 1 time', text)
-        if m:
-            mapped += int(m.group(1))
-        m = re.search(r'(\d+) \([\d.]+%\) aligned >1 times', text)
-        if m:
-            mapped += int(m.group(1))
+        # fallback: sum of the 'exactly 1 time' and '>1 times' lines
+        for pat in (r'(\d+) \([\d.]+%\) aligned (?:concordantly )?exactly 1 time',
+                    r'(\d+) \([\d.]+%\) aligned (?:concordantly )?>1 times'):
+            m = re.search(pat, text)
+            if m:
+                mapped += int(m.group(1))
     rate = round(mapped / total * 100, 2) if total > 0 else 0.0
     return total, mapped, rate
 
