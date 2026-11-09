@@ -12,6 +12,15 @@ include { MAKE_SUMMARY   } from './modules/local/make_summary'
 
 workflow {
 
+    // Values that start with '-' cannot be given on the command line: Nextflow
+    // reads `--fc_extra_args --primary` as two boolean flags. Set them in a
+    // config file passed with -c instead (params.fc_extra_args = '--primary').
+    ['fc_extra_args', 'bt2_extra_args'].each { p ->
+        if (params[p] instanceof Boolean)
+            error("params.${p} is '${params[p]}'. A value starting with '-' must be set " +
+                  "in a config file (-c), e.g. params.${p} = '--primary', not on the command line.")
+    }
+
     // ── inputs ──────────────────────────────────────────────────────────────
     def r1_file    = file(params.r1, checkIfExists: true)
     def r2_file    = params.r2 ? file(params.r2, checkIfExists: true) : null

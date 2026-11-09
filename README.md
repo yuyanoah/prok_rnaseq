@@ -121,6 +121,18 @@ primary one chosen by bowtie2). Check `summary/summary.tsv`: `assigned_reads`
 must not exceed `mapped_reads`. Re-running with `-resume` after changing
 `--fc_extra_args` recomputes only FEATURECOUNTS, CALC_TPM and MAKE_SUMMARY.
 
+Note that a value starting with `-` cannot be given on the command line:
+Nextflow parses `--fc_extra_args "--primary"` as two boolean flags and the
+pipeline stops with an error. Put such values in a config file instead:
+
+```groovy
+// extra.config
+params.fc_extra_args  = '--primary'
+params.bt2_extra_args = '--sensitive --no-discordant -k 200'
+```
+
+and run with `-c extra.config`.
+
 ## Requirements
 
 - Nextflow ≥ 23.04
