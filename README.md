@@ -108,8 +108,18 @@ Sample name is derived automatically from the R1 filename. Override with `--samp
 | `--max_cpus` | `16` | Max CPUs per process |
 | `--fc_feature_type` | `CDS` | featureCounts feature type |
 | `--fc_group_by` | `locus_tag` | featureCounts attribute for grouping |
-| `--fc_extra_args` | `-M --fraction` | Extra featureCounts arguments |
+| `--fc_extra_args` | `--primary` | Extra featureCounts arguments (see note below) |
 | `--bt2_extra_args` | `--sensitive --no-discordant -k 200` | Extra bowtie2 arguments |
+
+**Multi-mapping reads.** bowtie2 does not write the `NH` tag, so featureCounts
+cannot tell multi-mapped reads apart from unique ones. With `-k 200` every
+secondary alignment is a separate SAM record, and the former default
+`-M --fraction` counted each of them as its own read, inflating counts of
+repeated or low-complexity CDS so that assigned reads exceeded mapped reads.
+The default is now `--primary`, which counts one alignment per read (the
+primary one chosen by bowtie2). Check `summary/summary.tsv`: `assigned_reads`
+must not exceed `mapped_reads`. Re-running with `-resume` after changing
+`--fc_extra_args` recomputes only FEATURECOUNTS, CALC_TPM and MAKE_SUMMARY.
 
 ## Requirements
 

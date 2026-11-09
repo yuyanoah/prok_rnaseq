@@ -65,6 +65,13 @@ def main():
     assign_rate = round(assigned / total * 100, 2) if total > 0 else 0.0
     genes_gt0, total_cds           = parse_tpm(tpm_tsv)
 
+    if assigned > mapped > 0:
+        sys.stderr.write(
+            f"WARNING: {sample}: assigned reads ({assigned}) exceed mapped reads "
+            f"({mapped}). Secondary alignments are probably being counted "
+            "(e.g. featureCounts -M --fraction with bowtie2 -k, which emits no NH "
+            "tag). Use --fc_extra_args '--primary'.\n")
+
     header = [
         'sample', 'total_reads', 'mapped_reads', 'mapping_rate_pct',
         'assigned_reads', 'assignment_rate_pct',
